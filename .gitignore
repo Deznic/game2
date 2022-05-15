@@ -1,4 +1,4 @@
-.settings
-.classpath
-.project
-.class
+*.settings
+*.classpath
+*.project
+*.class
