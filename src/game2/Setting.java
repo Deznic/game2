@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Setting {
-	private final String fileLocation = "src/game2/data/setting.txt";
-	private final Map<String, String> setting = new HashMap<>();
-	public void loadSetting() {
+	private static final String fileLocation = "src/game2/data/setting.txt";
+	private static final Map<String, String> setting = new HashMap<>();
+	public static void loadSetting() {
 		try {
 			BufferedReader bReader = new BufferedReader(new FileReader(new File(fileLocation)));
 			String line;
@@ -22,5 +22,10 @@ public class Setting {
 			e.printStackTrace();
 		}
 	}
-	
+	static int getSettingInt(String name) {
+		return Integer.parseInt(setting.get(name));
+	}
+	static String getSettingStr(String name) {
+		return setting.get(name);
+	}
 }
