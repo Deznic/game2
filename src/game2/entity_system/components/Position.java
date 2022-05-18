@@ -7,18 +7,16 @@ import game2.ShaderProg;
 
 public class Position extends Component{
 	private Vector3f position = new Vector3f(0,0,0);
-	private ShaderProg prog;
 	
-	public Position(Vector3f pos, ShaderProg prog) {
+	public Position(Vector3f pos) {
 		position = pos;
-		this.prog = prog;
 	}
 	
 	@Override
 	public void update() {
 		Matrixes.model.identity();
 		Matrixes.model.translate(position);
-		prog.setUniMatrix4f(Matrixes.model, "model");
+		ShaderProg.setUniMatrix4f(Matrixes.model, "model");
 		
 	}
 }

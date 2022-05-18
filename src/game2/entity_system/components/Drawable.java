@@ -13,20 +13,16 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import game2.Matrixes;
-import game2.ShaderProg;
-
 public class Drawable extends Component{
 	
 	public static final int vao = glGenVertexArrays();
 	
-	float[] vert = new float[]{
-			0,0.5f,0,
-			0.5f,-0.5f,0,
-			-0.5f,-0.5f,0
-	};
+	float[] vert;
+	int vertCount;
 	
-	public Drawable() {
+	public Drawable(float[] shape) {
+		vert = shape;
+		vertCount = vert.length/3;
 		glBindVertexArray(vao);
 		int vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -38,7 +34,7 @@ public class Drawable extends Component{
 	
 	public void draw() {
 		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, vertCount);
 		glBindVertexArray(0);
 	}
 
@@ -46,4 +42,49 @@ public class Drawable extends Component{
 	public void update() {
 		draw();
 	}
+	
+	public static final float[]
+		Rectangle = new float[] {
+				-0.5f, -0.5f, -0.5f, 
+			     0.5f, -0.5f, -0.5f, 
+			     0.5f,  0.5f, -0.5f, 
+			     0.5f,  0.5f, -0.5f, 
+			    -0.5f,  0.5f, -0.5f, 
+			    -0.5f, -0.5f, -0.5f, 
+
+			    -0.5f, -0.5f,  0.5f, 
+			     0.5f, -0.5f,  0.5f, 
+			     0.5f,  0.5f,  0.5f, 
+			     0.5f,  0.5f,  0.5f, 
+			    -0.5f,  0.5f,  0.5f, 
+			    -0.5f, -0.5f,  0.5f, 
+
+			    -0.5f,  0.5f,  0.5f, 
+			    -0.5f,  0.5f, -0.5f, 
+			    -0.5f, -0.5f, -0.5f, 
+			    -0.5f, -0.5f, -0.5f, 
+			    -0.5f, -0.5f,  0.5f, 
+			    -0.5f,  0.5f,  0.5f, 
+
+			     0.5f,  0.5f,  0.5f, 
+			     0.5f,  0.5f, -0.5f, 
+			     0.5f, -0.5f, -0.5f, 
+			     0.5f, -0.5f, -0.5f, 
+			     0.5f, -0.5f,  0.5f, 
+			     0.5f,  0.5f,  0.5f, 
+
+			    -0.5f, -0.5f, -0.5f, 
+			     0.5f, -0.5f, -0.5f, 
+			     0.5f, -0.5f,  0.5f, 
+			     0.5f, -0.5f,  0.5f, 
+			    -0.5f, -0.5f,  0.5f, 
+			    -0.5f, -0.5f, -0.5f, 
+
+			    -0.5f,  0.5f, -0.5f, 
+			     0.5f,  0.5f, -0.5f, 
+			     0.5f,  0.5f,  0.5f, 
+			     0.5f,  0.5f,  0.5f, 
+			    -0.5f,  0.5f,  0.5f, 
+			    -0.5f,  0.5f, -0.5f,
+		};
 }

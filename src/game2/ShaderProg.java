@@ -36,7 +36,9 @@ import util.FileUtils;
  */
 public class ShaderProg {
 	
-	int id, vertId, fragId;
+	static int id;
+	int vertId;
+	int fragId;
 	
 	/**
 	 * @param vertex shader path
@@ -75,11 +77,11 @@ public class ShaderProg {
 		glDeleteShader(sId);
 	}
 	
-	public void setUniMatrix4f(Matrix4f val, String name) {
+	public static void setUniMatrix4f(Matrix4f val, String name) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer vBuffer = stack.mallocFloat(16);
 			val.get(vBuffer);
-			glUniformMatrix4fv(glGetUniformLocation(id, name), false, vBuffer);
+			glUniformMatrix4fv(glGetUniformLocation(ShaderProg.id, name), false, vBuffer);
 		}
 	}
 	

@@ -15,8 +15,6 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -51,19 +49,21 @@ public class Game {
 			Setting.getSettingInt("fov"), 
 			Setting.getSettingInt("window_width")/Setting.getSettingInt("window_height"), 
 			0, 100);
-		Matrixes.view.translate(new Vector3f(0,0,-3));
+		
+		Matrixes.view.rotate(toRadians(90), new Vector3f(1,0,0));
+		Matrixes.view.translate(new Vector3f(0,-5,0));
 		
 		shaderProgram = new ShaderProg("src/game2/data/vertex.vs", "src/game2/data/fragment.fs");
-		shaderProgram.setUniMatrix4f(Matrixes.projection, "projection");
-		shaderProgram.setUniMatrix4f(Matrixes.view, "view");
-		shaderProgram.setUniMatrix4f(Matrixes.model, "model");
+		ShaderProg.setUniMatrix4f(Matrixes.projection, "projection");
+		ShaderProg.setUniMatrix4f(Matrixes.view, "view");
+		ShaderProg.setUniMatrix4f(Matrixes.model, "model");
 		shaderProgram.use();
 		
 		Entity test = new Entity(), test2 = new Entity();
-		test.addComponent(new Drawable());
-		test2.addComponent(new Drawable());
-		test.addComponent(new Position(new Vector3f(-2,0,0), shaderProgram));
-		test2.addComponent(new Position(new Vector3f(2,0,0), shaderProgram));
+		test.addComponent(new Drawable(Drawable.Rectangle));
+		test2.addComponent(new Drawable(Drawable.Rectangle));
+		test.addComponent(new Position(new Vector3f(-2,0,0)));
+		test2.addComponent(new Position(new Vector3f(2,0,0)));
 		
 		entitySystem.addEntity(test);
 		entitySystem.addEntity(test2);
