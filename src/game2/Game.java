@@ -1,5 +1,6 @@
 package game2;
 
+import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwInit;
@@ -14,7 +15,9 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
+import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -22,6 +25,7 @@ import org.lwjgl.opengl.GL;
 import game2.entity_system.Entity;
 import game2.entity_system.EntitySystem;
 import game2.entity_system.components.Drawable;
+import game2.entity_system.components.Position;
 
 public class Game {
 	private long windowId;
@@ -34,8 +38,8 @@ public class Game {
 		Setting.loadSetting();
 		
 		windowId = glfwCreateWindow(
-				Setting.getSettingInt("screen_width"), 
-				Setting.getSettingInt("screen_height"), 
+				Setting.getSettingInt("window_width"), 
+				Setting.getSettingInt("window_height"), 
 				Setting.getSettingStr("window_name"), 
 				0, 0);
 		
@@ -43,13 +47,26 @@ public class Game {
 		glfwSwapInterval(1);
 		GL.createCapabilities();
 		
+		Matrixes.projection.perspective(
+			Setting.getSettingInt("fov"), 
+			Setting.getSettingInt("window_width")/Setting.getSettingInt("window_height"), 
+			0, 100);
+		Matrixes.view.translate(new Vector3f(0,0,-3));
+		
 		shaderProgram = new ShaderProg("src/game2/data/vertex.vs", "src/game2/data/fragment.fs");
+		shaderProgram.setUniMatrix4f(Matrixes.projection, "projection");
+		shaderProgram.setUniMatrix4f(Matrixes.view, "view");
+		shaderProgram.setUniMatrix4f(Matrixes.model, "model");
 		shaderProgram.use();
 		
-		Entity test = new Entity();
+		Entity test = new Entity(), test2 = new Entity();
 		test.addComponent(new Drawable());
+		test2.addComponent(new Drawable());
+		test.addComponent(new Position(new Vector3f(-2,0,0), shaderProgram));
+		test2.addComponent(new Position(new Vector3f(2,0,0), shaderProgram));
 		
 		entitySystem.addEntity(test);
+		entitySystem.addEntity(test2);
 		
 		entitySystem.start();
 		
@@ -73,6 +90,7 @@ public class Game {
 	}
 	
 	private void loop() {
+		shaderProgram.use();
 		entitySystem.update();
 	}
 	
