@@ -22,10 +22,13 @@ public class Setting {
 			e.printStackTrace();
 		}
 	}
-	static int getSettingInt(String name) {
-		return Integer.parseInt(setting.get(name));
+	public static int getSettingInt(String name) {
+		return Integer.parseInt(getSettingStr(name));
 	}
-	static String getSettingStr(String name) {
+	public static String getSettingStr(String name) {
 		return setting.get(name);
+	}
+	public static float getSettingFlt(String name) {
+		return Float.parseFloat(getSettingStr(name));
 	}
 }

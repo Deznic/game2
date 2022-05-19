@@ -39,7 +39,7 @@ public class Drawable extends Component{
 	}
 
 	@Override
-	public void update() {
+	public void update(float dt) {
 		draw();
 	}
 	

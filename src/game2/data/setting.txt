@@ -2,3 +2,4 @@ window_width=800
 window_height=600
 window_name=test
 fov=90
+sensitivity=0.1

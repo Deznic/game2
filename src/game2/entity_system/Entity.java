@@ -9,6 +9,7 @@ import game2.entity_system.components.Component;
 public class Entity {
 	private List<Component> components = new ArrayList<>();
 	private UUID id;
+	private boolean player;
 	
 	public <T extends Component> T getComponent(Class<T> componentClass) {
 		for (Component comp : components) {
@@ -38,9 +39,9 @@ public class Entity {
 		comp.entity = this;
 	}
 	
-	public void update() {
+	public void update(float dt) {
 		for (int i = 0; i < components.size(); i++) {
-			components.get(i).update();
+			components.get(i).update(dt);
 		}
 	}
 	

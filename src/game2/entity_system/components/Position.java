@@ -13,7 +13,7 @@ public class Position extends Component{
 	}
 	
 	@Override
-	public void update() {
+	public void update(float dt) {
 		Matrixes.model.identity();
 		Matrixes.model.translate(position);
 		ShaderProg.setUniMatrix4f(Matrixes.model, "model");
