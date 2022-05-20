@@ -1,5 +1,10 @@
 package game2.entity_system.components;
 
+import static org.joml.Math.cos;
+import static org.joml.Math.sin;
+import static org.joml.Math.toRadians;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
@@ -10,66 +15,137 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 import java.nio.IntBuffer;
 
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
 import game2.Matrixes;
 import game2.Setting;
+import game2.ShaderProg;
 import game2.systems.Callbacks;
 
 public class Player extends Component{
 	
 	private float speed = 1.5f;
 	
-	private float lastX, lastY, pitch, yaw;
 	private float sensitivity;
 	
-	public Player(long window) {
+	camera camera;
+	
+	public Player(long window, Vector3f pos) {
 		sensitivity = Setting.getSettingFlt("sensitivity");
-		try (MemoryStack stack = MemoryStack.stackPush()){
-			IntBuffer w = stack.mallocInt(1), h = stack.mallocInt(1);
-			glfwGetWindowSize(window, w, h);
-			lastX = (float)w.get()/2.0f;
-			lastY = (float)h.get()/2.0f;
-		}
+		
+		camera = new camera(pos);
 	}
 	
 	
 	//TODO: continue this
 	@Override
 	public void update(float dt) {
-		float moveSpeed = speed*dt;
-		if (Callbacks.getKey(GLFW_KEY_LEFT_CONTROL)) {
-			moveSpeed = (speed+2)*dt;
+		camera.update(dt);
+	}
+	
+	private class camera {
+		public Vector3f cameraPos;
+		private Vector3f cameraUp, cameraRight, cameraFront, cameraDirection;
+		private float pitch, yaw;
+		private float lastX, lastY;
+		public camera(Vector3f pos) {
+			/*
+			 * 
+			 */
+			
+			lastX = (float)Callbacks.windowWidth/2.0f;
+			lastY = (float)Callbacks.windowHeight/2.0f;
+			
+			cameraPos = pos;
+			cameraUp = new Vector3f(0,1,0);
+			cameraDirection = new Vector3f();
+			cameraRight = new Vector3f();
+			cameraFront = new Vector3f();
+			
+			cameraDirection.x = cos(toRadians(yaw)) * cos(toRadians(pitch));
+			cameraDirection.y = sin(toRadians(pitch));
+			cameraDirection.z = sin(toRadians(yaw)) * cos(toRadians(pitch));
+			
+			cameraUp.cross(cameraDirection, cameraRight);//camera right
+			cameraRight.normalize();
+			
+			cameraRight.cross(cameraUp, cameraFront);//camera front
+			System.out.println(cameraFront);
+			
+			Callbacks.setCursorInputMode(GLFW_CURSOR_DISABLED);
 		}
-		if (Callbacks.getKey(GLFW_KEY_A)) {
-			Matrixes.view.translate(moveSpeed,0,0);
-		}
-		if (Callbacks.getKey(GLFW_KEY_D)) {
-			Matrixes.view.translate(-moveSpeed,0,0);
-		}
-		if (Callbacks.getKey(GLFW_KEY_W)) {
-			Matrixes.view.translate(0,0,moveSpeed);
-		}
-		if (Callbacks.getKey(GLFW_KEY_S)) {
-			Matrixes.view.translate(0,0,-moveSpeed);
-		}
-		float xPos = Callbacks.mouseX, yPos = Callbacks.mouseY;
-		
-		float xOffset = xPos - lastX, yOffset = yPos - lastY;
-		lastX = xPos;
-		lastY = yPos;
-		xOffset *= sensitivity;
-		yOffset *= sensitivity;
-		
-		pitch += xOffset;
-		yaw += yOffset;
-		
-		if(pitch > 89) {
-			pitch = 89;
-		}
-		if(pitch < -89) {
-			pitch = -89;
+		public void update(float dt) {
+			
+			float xPos = Callbacks.getMousePos()[0], yPos = Callbacks.getMousePos()[1];
+			
+			float xOffset = xPos - lastX, yOffset = lastY - yPos;
+			lastX = xPos;
+			lastY = yPos;
+			xOffset *= sensitivity;
+			yOffset *= sensitivity;
+			
+			yaw += xOffset;
+			pitch += yOffset;
+			
+			if(pitch > 89) {
+				pitch = 89;
+			}
+			if(pitch < -89) {
+				pitch = -89;
+			}
+			
+			cameraDirection.x = cos(toRadians(yaw)) * cos(toRadians(pitch));
+			cameraDirection.y = sin(toRadians(pitch));
+			cameraDirection.z = sin(toRadians(yaw)) * cos(toRadians(pitch));
+			
+			cameraDirection.normalize(cameraFront);
+			
+			Vector3f result = new Vector3f();
+			float moveSpeed = speed*dt;
+			if (Callbacks.getKey(GLFW_KEY_LEFT_CONTROL)) {
+				moveSpeed = (speed+2)*dt;
+			}
+			if (Callbacks.getKey(GLFW_KEY_A)) {
+				cameraFront.cross(cameraUp, result);
+				result.normalize();
+				result.mul(moveSpeed);
+//				cameraPos.sub(result);
+				cameraPos.x -= result.x;
+				cameraPos.z -= result.z;
+			}
+			if (Callbacks.getKey(GLFW_KEY_D)) {
+				cameraFront.cross(cameraUp, result);
+				result.normalize();
+				result.mul(moveSpeed);
+//				cameraPos.add(result);
+				cameraPos.x += result.x;
+				cameraPos.z += result.z;
+			}
+			if (Callbacks.getKey(GLFW_KEY_W)) {
+				cameraFront.mul(moveSpeed, result);
+//				cameraPos.add(result);
+				cameraPos.x += result.x;
+				cameraPos.z += result.z;
+			}
+			if (Callbacks.getKey(GLFW_KEY_S)) {
+				cameraFront.mul(moveSpeed, result);
+//				cameraPos.sub(result);
+				cameraPos.x -= result.x;
+				cameraPos.z -= result.z;
+			}
+			System.out.println(cameraFront);
+			
+			Vector3f test = new Vector3f();
+			
+			test.x = cameraPos.x + cameraFront.x;
+			test.z = cameraPos.z + cameraFront.z;
+			test.y = cameraPos.y + cameraFront.y;
+			
+			Matrixes.view.identity();
+//			Matrixes.view.lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
+			Matrixes.view.lookAt(cameraPos, test, cameraUp);
+			ShaderProg.setUniMatrix4f(Matrixes.view, "view");
 		}
 	}
-
 }

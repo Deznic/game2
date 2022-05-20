@@ -67,7 +67,7 @@ public class Game {
 		test2.addComponent(new Drawable(Drawable.Rectangle));
 		test.addComponent(new Position(new Vector3f(-2,0,0)));
 		test2.addComponent(new Position(new Vector3f(2,0,0)));
-		player.addComponent(new Player(windowId));
+		player.addComponent(new Player(windowId, new Vector3f(0,0,0)));
 		
 		entitySystem.addEntity(test);
 		entitySystem.addEntity(test2);
