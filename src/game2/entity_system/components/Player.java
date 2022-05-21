@@ -1,6 +1,9 @@
 package game2.entity_system.components;
 
+import static org.joml.Math.ceil;
 import static org.joml.Math.cos;
+import static org.joml.Math.floor;
+import static org.joml.Math.round;
 import static org.joml.Math.sin;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
@@ -15,6 +18,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 import java.nio.IntBuffer;
 
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
@@ -100,51 +104,41 @@ public class Player extends Component{
 			cameraDirection.z = sin(toRadians(yaw)) * cos(toRadians(pitch));
 			
 			cameraDirection.normalize(cameraFront);
+			cameraDirection.y = 0;
+			cameraDirection.normalize();
 			
 			Vector3f result = new Vector3f();
 			float moveSpeed = speed*dt;
 			if (Callbacks.getKey(GLFW_KEY_LEFT_CONTROL)) {
 				moveSpeed = (speed+2)*dt;
 			}
-			if (Callbacks.getKey(GLFW_KEY_A)) {
-				cameraFront.cross(cameraUp, result);
+			if (Callbacks.getKey(GLFW_KEY_A)) {//getting camera right or left idk
+				cameraDirection.cross(cameraUp, result);
 				result.normalize();
 				result.mul(moveSpeed);
-//				cameraPos.sub(result);
 				cameraPos.x -= result.x;
 				cameraPos.z -= result.z;
 			}
 			if (Callbacks.getKey(GLFW_KEY_D)) {
-				cameraFront.cross(cameraUp, result);
+				cameraDirection.cross(cameraUp, result);
 				result.normalize();
 				result.mul(moveSpeed);
-//				cameraPos.add(result);
 				cameraPos.x += result.x;
 				cameraPos.z += result.z;
 			}
 			if (Callbacks.getKey(GLFW_KEY_W)) {
-				cameraFront.mul(moveSpeed, result);
-//				cameraPos.add(result);
+				cameraDirection.mul(moveSpeed, result);
 				cameraPos.x += result.x;
 				cameraPos.z += result.z;
 			}
 			if (Callbacks.getKey(GLFW_KEY_S)) {
-				cameraFront.mul(moveSpeed, result);
-//				cameraPos.sub(result);
+				cameraDirection.mul(moveSpeed, result);
 				cameraPos.x -= result.x;
 				cameraPos.z -= result.z;
 			}
-			System.out.println(cameraFront);
-			
-			Vector3f test = new Vector3f();
-			
-			test.x = cameraPos.x + cameraFront.x;
-			test.z = cameraPos.z + cameraFront.z;
-			test.y = cameraPos.y + cameraFront.y;
 			
 			Matrixes.view.identity();
-//			Matrixes.view.lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
-			Matrixes.view.lookAt(cameraPos, test, cameraUp);
+			Matrixes.view.lookAt(cameraPos, cameraPos.add(cameraFront, new Vector3f()), cameraUp);
 			ShaderProg.setUniMatrix4f(Matrixes.view, "view");
 		}
 	}
