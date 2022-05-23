@@ -43,6 +43,10 @@ public class Drawable extends Component{
 		draw();
 	}
 	
+	public float[] getVert() {
+		return vert;
+	}
+	
 	public static final float[]
 		Rectangle = new float[] {
 				-0.5f, -0.5f, -0.5f, 

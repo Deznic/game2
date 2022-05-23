@@ -27,7 +27,7 @@ import game2.entity_system.Entity;
 import game2.entity_system.EntitySystem;
 import game2.entity_system.components.Drawable;
 import game2.entity_system.components.Player;
-import game2.entity_system.components.Position;
+import game2.entity_system.components.Transformation;
 
 public class Game {
 	private long windowId;
@@ -65,8 +65,8 @@ public class Game {
 		Entity test = new Entity(), test2 = new Entity(), player = new Entity();
 		test.addComponent(new Drawable(Drawable.Rectangle));
 		test2.addComponent(new Drawable(Drawable.Rectangle));
-		test.addComponent(new Position(new Vector3f(-2,0,0)));
-		test2.addComponent(new Position(new Vector3f(2,0,0)));
+		test.addComponent(new Transformation(new Vector3f(-2,0,0), null, null, 0));
+		test2.addComponent(new Transformation(new Vector3f(2,0,0), null, null, 0));
 		player.addComponent(new Player(windowId, new Vector3f(0,0,0)));
 		
 		entitySystem.addEntity(test);

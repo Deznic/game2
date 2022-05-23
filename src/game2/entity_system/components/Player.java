@@ -1,27 +1,15 @@
 package game2.entity_system.components;
 
-import static org.joml.Math.ceil;
 import static org.joml.Math.cos;
-import static org.joml.Math.floor;
-import static org.joml.Math.round;
 import static org.joml.Math.sin;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-
-import java.nio.IntBuffer;
-
-import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
-
 import game2.Matrixes;
 import game2.Setting;
 import game2.ShaderProg;
@@ -41,8 +29,6 @@ public class Player extends Component{
 		camera = new camera(pos);
 	}
 	
-	
-	//TODO: continue this
 	@Override
 	public void update(float dt) {
 		camera.update(dt);
@@ -54,10 +40,6 @@ public class Player extends Component{
 		private float pitch, yaw;
 		private float lastX, lastY;
 		public camera(Vector3f pos) {
-			/*
-			 * 
-			 */
-			
 			lastX = (float)Callbacks.windowWidth/2.0f;
 			lastY = (float)Callbacks.windowHeight/2.0f;
 			
@@ -75,13 +57,13 @@ public class Player extends Component{
 			cameraRight.normalize();
 			
 			cameraRight.cross(cameraUp, cameraFront);//camera front
-			System.out.println(cameraFront);
 			
 			Callbacks.setCursorInputMode(GLFW_CURSOR_DISABLED);
 		}
 		public void update(float dt) {
 			
-			float xPos = Callbacks.getMousePos()[0], yPos = Callbacks.getMousePos()[1];
+			float pos[] = Callbacks.getMousePos();
+			float xPos = pos[0], yPos = pos[1];
 			
 			float xOffset = xPos - lastX, yOffset = lastY - yPos;
 			lastX = xPos;
